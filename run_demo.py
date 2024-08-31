@@ -37,6 +37,7 @@ from browser_env.helper_functions import (
 )
 from evaluation_harness import image_utils
 
+
 LOG_FOLDER = "log_files"
 Path(LOG_FOLDER).mkdir(parents=True, exist_ok=True)
 LOG_FILE_NAME = f"{LOG_FOLDER}/log_{time.strftime('%Y%m%d%H%M%S', time.localtime())}_{random.randint(0, 10000)}.log"
@@ -163,11 +164,11 @@ def config() -> argparse.Namespace:
         default=3840,
     )
 
-
     # example config
     parser.add_argument("--start_url", type=str, default="https://google.com")
     parser.add_argument("--intent", type=str, required=True)
-    parser.add_argument("--image", type=str, default="", help="url of images, seperated by |AND|")
+    parser.add_argument("--image", type=str, default="",
+                        help="url of images, seperated by |AND|")
 
     # logging related
     parser.add_argument("--result_dir", type=str, default="")
@@ -260,8 +261,8 @@ def test(
         "repeating_action": args.repeating_action_failure_th,
     }
 
-    caption_image_fn = None  # Don't use captioning for the demo, due to extra resources required to run BLIP-2.
-
+    # Don't use captioning for the demo, due to extra resources required to run BLIP-2.
+    caption_image_fn = None
 
     agent = construct_agent(
         args,
@@ -307,10 +308,11 @@ def test(
                 for image_path in image_paths:
                     # Load image either from the web or from a local path.
                     if image_path.startswith("http"):
-                        input_image = Image.open(requests.get(image_path, stream=True).raw)
+                        input_image = Image.open(
+                            requests.get(image_path, stream=True).raw)
                     else:
                         input_image = Image.open(image_path)
-                    
+
                     images.append(input_image)
 
         logger.info(f"[Config file]: {config_file}")
@@ -440,9 +442,9 @@ if __name__ == "__main__":
     with open(tmp_config_file, 'w') as f:
         json.dump({
             "task_id": 0,
-          "start_url": args.start_url,
-          "intent": args.intent,
-          "image": images_url
+            "start_url": args.start_url,
+            "intent": args.intent,
+            "image": images_url
         }, f)
 
     args.render_screenshot = True
